@@ -12,18 +12,30 @@ export default function Home() {
           height={38}
           priority
         />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+        <a
+          href="/tasks"
+          className="flex flex-col items-center justify-center p-8 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-xl hover:scale-105 transition-transform duration-300 shadow-lg hover:shadow-xl w-full max-w-md mx-auto transform hover:-translate-y-1"
+        >
+          <span className="text-2xl mb-2">🚀 Get Started Now!</span>
+          <span className="text-center opacity-90">
+            Click here to begin your Couch Tasks journey
+          </span>
+          <div className="mt-4 flex items-center justify-center bg-white/20 px-4 py-2 rounded-full">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-2"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span>Tap to explore</span>
+          </div>
+        </a>
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">
           <a
