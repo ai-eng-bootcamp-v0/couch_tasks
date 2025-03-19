@@ -28,7 +28,6 @@ export default function LoginForm() {
       const form = e.currentTarget;
       const formData = new FormData(form);
 
-      // Call either login or signup based on current mode
       if (isLogin) {
         await login(formData);
       } else {
@@ -40,7 +39,6 @@ export default function LoginForm() {
     }
   };
 
-  // Toggle between login and signup modes
   const toggleMode = () => {
     setIsLogin(!isLogin);
   };

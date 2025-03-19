@@ -32,6 +32,7 @@ export default function ListingCard({
             alt={`${listing.city}, ${listing.country}`}
             fill
             className="object-cover transition-transform group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         ) : (
           <div className="w-full h-full bg-gray-300 flex items-center justify-center">
