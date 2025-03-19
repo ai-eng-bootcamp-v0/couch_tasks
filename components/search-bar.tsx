@@ -1,21 +1,52 @@
-import { Search } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+"use client";
 
-export default function SearchBar() {
-  return (
-    <div className="relative mx-auto max-w-md w-full">
-      <form className="flex items-center">
-        <Input
-          type="text"
-          placeholder="Search destinations"
-          className="rounded-l-full border-r-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-        />
-        <Button type="submit" size="icon" className="rounded-r-full bg-rose-500 hover:bg-rose-600 h-10">
-          <Search className="h-5 w-5" />
-        </Button>
-      </form>
-    </div>
-  )
+import type React from "react";
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
+import searchToKeywords from "@/lib/search";
+
+interface SearchBarProps {
+  placeholder?: string;
+  className?: string;
 }
 
+export default function SearchBar({
+  placeholder = "Search...",
+  className = "",
+}: SearchBarProps) {
+  const [query, setQuery] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    searchToKeywords(query);
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className={`flex w-full max-w-md items-center gap-2 ${className}`}
+    >
+      <div className="relative flex-1">
+        <Input
+          type="text"
+          placeholder={placeholder}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="pr-10 h-10 rounded-lg border-neutral-200 focus-visible:ring-neutral-400"
+        />
+      </div>
+      <Button
+        type="submit"
+        variant="default"
+        size="icon"
+        className="h-10 w-10 rounded-lg bg-neutral-900 hover:bg-neutral-700"
+      >
+        <Search className="h-4 w-4" />
+        <span className="sr-only">Search</span>
+      </Button>
+    </form>
+  );
+}
