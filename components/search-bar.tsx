@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Loader2 } from "lucide-react";
@@ -22,19 +22,46 @@ export default function SearchBar({
   const searchParams = useSearchParams();
   const [query, setQuery] = useState(initialQuery);
   const [isSearching, setIsSearching] = useState(false);
-  const [isPending, startTransition] = useTransition();
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const currentQuery = searchParams.get("q") || "";
     setQuery(currentQuery);
     setIsSearching(false);
+
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+      searchTimeoutRef.current = null;
+    }
   }, [searchParams]);
+
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSearching(true);
 
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    searchTimeoutRef.current = setTimeout(() => {
+      setIsSearching(false);
+    }, 10000);
+
     const params = new URLSearchParams(searchParams.toString());
+    const currentQueryParam = searchParams.get("q");
+
+    if (!query && !currentQueryParam) {
+      setIsSearching(false);
+      return;
+    }
+
     if (query) {
       params.set("q", query);
     } else {

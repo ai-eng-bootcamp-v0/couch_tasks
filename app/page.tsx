@@ -2,8 +2,6 @@ import ListingsGrid from "@/components/listings-grid";
 import SearchBar from "@/components/search-bar";
 import { getListings } from "@/lib/get-listings";
 
-export const dynamic = "force-dynamic";
-
 interface HomeProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }

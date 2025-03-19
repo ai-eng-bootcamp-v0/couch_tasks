@@ -1,15 +1,9 @@
 import { cache } from "react";
 import { createClient } from "@/utils/supabase/server";
 import { aiSearch } from "./ai-search";
-import { connection } from "next/server";
 
 export const getListings = cache(async (searchQuery?: string) => {
-  if (process.env.NODE_ENV === "development") {
-    await connection();
-  }
-
   const supabase = await createClient();
-
   let query = supabase.from("listings").select();
 
   if (searchQuery) {
@@ -30,12 +24,17 @@ export const getListings = cache(async (searchQuery?: string) => {
     }
   }
 
-  const { data: listings, error } = await query;
+  try {
+    const { data: listings, error } = await query;
 
-  if (error) {
-    console.error("Database query error:", error);
+    if (error) {
+      console.error("Database query error:", error);
+      return [];
+    }
+
+    return listings || [];
+  } catch (dbError) {
+    console.error("Database operation failed:", dbError);
     return [];
   }
-
-  return listings || [];
 });

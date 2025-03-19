@@ -12,13 +12,13 @@ export const aiSearch = cache(
       }
 
       const result = await generateObject({
-        model: openai("gpt-4o-mini"),
+        model: openai("gpt-4o"),
         schema: searchResponseSchema,
         messages: [
           {
             role: "system",
             content:
-              "You are an expert at extracting search parameters from user queries. Extract only city, country, and effort level (1, 2, or 3) if mentioned. Return only the fields that are relevant to the search.",
+              "You are an expert at extracting search parameters from user queries. Extract only city, country, and effort level (1, 2, or 3) if mentioned. 1 means it's easy and that anyone can do it for low effort, 3 means it's difficult and strong people usually can do it. Return only the fields that are relevant to the search. Multiple fields allowed.",
           },
           {
             role: "user",
@@ -28,10 +28,16 @@ export const aiSearch = cache(
       });
 
       const searchParams = result.object;
+      console.log("Generated search parameters:", searchParams);
       return searchParams;
     } catch (error) {
       console.error("Error in AI search:", error);
-      return {};
+      // Return an empty object but ensure we're not silently failing
+      throw new Error(
+        `AI search failed: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   }
 );
