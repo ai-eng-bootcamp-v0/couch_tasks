@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Loader2 } from "lucide-react";
@@ -22,11 +22,12 @@ export default function SearchBar({
   const searchParams = useSearchParams();
   const [query, setQuery] = useState(initialQuery);
   const [isSearching, setIsSearching] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
-  // Update the input value when the URL changes
   useEffect(() => {
     const currentQuery = searchParams.get("q") || "";
     setQuery(currentQuery);
+    setIsSearching(false);
   }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
