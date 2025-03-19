@@ -8,7 +8,6 @@ export const aiSearch = cache(
   async (query: string): Promise<SearchResponse> => {
     try {
       if (!query || query.trim() === "") {
-        console.log("Empty query, returning empty object");
         return {};
       }
 

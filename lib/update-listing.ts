@@ -1,7 +1,6 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { revalidateListings, revalidateSearch } from "./get-listings";
 
 export async function updateListing(id: string, data: any) {
   try {
@@ -10,15 +9,6 @@ export async function updateListing(id: string, data: any) {
 
     if (error) {
       throw new Error(`Failed to update listing: ${error.message}`);
-    }
-
-    await revalidateListings();
-
-    if (data.city) {
-      await revalidateSearch(data.city);
-    }
-    if (data.country) {
-      await revalidateSearch(data.country);
     }
 
     return { success: true };

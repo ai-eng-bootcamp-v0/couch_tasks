@@ -33,7 +33,6 @@ export default function SearchBar({
     e.preventDefault();
     setIsSearching(true);
 
-    // Update the URL with the search query
     const params = new URLSearchParams(searchParams.toString());
     if (query) {
       params.set("q", query);
@@ -42,12 +41,6 @@ export default function SearchBar({
     }
 
     router.push(`/?${params.toString()}`);
-
-    // Reset searching state after navigation
-    // We add a small delay to give the impression of searching
-    setTimeout(() => {
-      setIsSearching(false);
-    }, 500);
   };
 
   return (

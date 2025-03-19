@@ -3,8 +3,6 @@ import { type SearchResponse } from "@/models/ai-schemas";
 export default async function searchToKeywords(
   search: string
 ): Promise<SearchResponse> {
-  console.log("Converting search query to keywords:", search);
-
   if (!search || search.trim() === "") {
     console.log("Empty search query, returning empty object");
     return {};

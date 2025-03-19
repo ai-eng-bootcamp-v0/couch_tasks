@@ -59,3 +59,5 @@ Key Conventions:
   - Avoid for data fetching or state management
 
 Follow Next.js docs for Data Fetching, Rendering, and Routing
+
+Do not write comments in the code. Just write code.
