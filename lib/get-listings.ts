@@ -40,42 +40,43 @@ export const getListings = cache(async (searchQuery?: string) => {
 
   try {
     const { data: listings, error } = await query;
-
-    // Send to Pinecone
-    const response = await namespace.searchRecords({
-      query: {
-        topK: 2,
-        inputs: { text: searchQuery },
-      },
-      fields: ["listing_id"],
-    });
-
     let listings_pinecone = null;
 
-    if (response.result.hits.length > 0) {
-      const listingIds = response.result.hits
-        .map((hit) => {
-          const listingId =
-            hit.fields && typeof hit.fields === "object"
-              ? (hit.fields as Record<string, unknown>).listing_id
-              : null;
-          return typeof listingId === "string" ? listingId : null;
-        })
-        .filter((id): id is string => id !== null);
+    // Send to Pinecone
+    if (searchQuery && searchQuery.trim() !== "") {
+      const response = await namespace.searchRecords({
+        query: {
+          topK: 2,
+          inputs: { text: searchQuery },
+        },
+        fields: ["listing_id"],
+      });
 
-      if (listingIds.length > 0) {
-        const { data: pineconeListings } = await supabase
-          .from("listings")
-          .select()
-          .in("id", listingIds);
+      if (response.result.hits.length > 0) {
+        const listingIds = response.result.hits
+          .map((hit) => {
+            const listingId =
+              hit.fields && typeof hit.fields === "object"
+                ? (hit.fields as Record<string, unknown>).listing_id
+                : null;
+            return typeof listingId === "string" ? listingId : null;
+          })
+          .filter((id): id is string => id !== null);
 
-        listings_pinecone = pineconeListings;
+        if (listingIds.length > 0) {
+          const { data: pineconeListings } = await supabase
+            .from("listings")
+            .select()
+            .in("id", listingIds);
+
+          listings_pinecone = pineconeListings;
+        }
       }
-    }
 
-    if (error) {
-      console.error("Database query error:", error);
-      return { regular: [], from_pinecone: null } as GetListingsResult;
+      if (error) {
+        console.error("Database query error:", error);
+        return { regular: [], from_pinecone: null } as GetListingsResult;
+      }
     }
 
     return {
