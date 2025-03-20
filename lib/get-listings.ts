@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { createClient } from "@/utils/supabase/server";
 import { aiSearch } from "./ai-search";
-import { namespace } from "./pinecone-wrapper";
+import { getPineconeListings } from "./pinecone-queries";
 
 export interface Listing {
   id: string;
@@ -39,49 +39,22 @@ export const getListings = cache(async (searchQuery?: string) => {
   }
 
   try {
-    const { data: listings, error } = await query;
-    let listings_pinecone = null;
+    // Run both queries in parallel
+    const [regularQueryResult, pineconeListings] = await Promise.all([
+      query,
+      searchQuery ? getPineconeListings(searchQuery) : null,
+    ]);
 
-    // Send to Pinecone
-    if (searchQuery && searchQuery.trim() !== "") {
-      const response = await namespace.searchRecords({
-        query: {
-          topK: 2,
-          inputs: { text: searchQuery },
-        },
-        fields: ["listing_id"],
-      });
+    const { data: listings, error } = regularQueryResult;
 
-      if (response.result.hits.length > 0) {
-        const listingIds = response.result.hits
-          .map((hit) => {
-            const listingId =
-              hit.fields && typeof hit.fields === "object"
-                ? (hit.fields as Record<string, unknown>).listing_id
-                : null;
-            return typeof listingId === "string" ? listingId : null;
-          })
-          .filter((id): id is string => id !== null);
-
-        if (listingIds.length > 0) {
-          const { data: pineconeListings } = await supabase
-            .from("listings")
-            .select()
-            .in("id", listingIds);
-
-          listings_pinecone = pineconeListings;
-        }
-      }
-
-      if (error) {
-        console.error("Database query error:", error);
-        return { regular: [], from_pinecone: null } as GetListingsResult;
-      }
+    if (error) {
+      console.error("Database query error:", error);
+      return { regular: [], from_pinecone: null } as GetListingsResult;
     }
 
     return {
       regular: listings || [],
-      from_pinecone: listings_pinecone,
+      from_pinecone: pineconeListings,
     } as GetListingsResult;
   } catch (dbError) {
     console.error("Database operation failed:", dbError);
