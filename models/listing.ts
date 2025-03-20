@@ -6,4 +6,5 @@ export interface Listing {
   country: string;
   effort_level: EffortLevel;
   image_url?: string;
+  description?: string;
 }

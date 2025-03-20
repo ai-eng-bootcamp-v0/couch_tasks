@@ -1,6 +1,20 @@
 import { cache } from "react";
 import { createClient } from "@/utils/supabase/server";
 import { aiSearch } from "./ai-search";
+import { namespace } from "./pinecone-wrapper";
+
+export interface Listing {
+  id: string;
+  city?: string;
+  country?: string;
+  effort_level?: number;
+  [key: string]: any;
+}
+
+export type GetListingsResult = {
+  regular: Listing[];
+  from_pinecone: Listing[] | null;
+};
 
 export const getListings = cache(async (searchQuery?: string) => {
   const supabase = await createClient();
@@ -27,14 +41,49 @@ export const getListings = cache(async (searchQuery?: string) => {
   try {
     const { data: listings, error } = await query;
 
-    if (error) {
-      console.error("Database query error:", error);
-      return [];
+    // Send to Pinecone
+    const response = await namespace.searchRecords({
+      query: {
+        topK: 2,
+        inputs: { text: searchQuery },
+      },
+      fields: ["listing_id"],
+    });
+
+    let listings_pinecone = null;
+
+    if (response.result.hits.length > 0) {
+      const listingIds = response.result.hits
+        .map((hit) => {
+          const listingId =
+            hit.fields && typeof hit.fields === "object"
+              ? (hit.fields as Record<string, unknown>).listing_id
+              : null;
+          return typeof listingId === "string" ? listingId : null;
+        })
+        .filter((id): id is string => id !== null);
+
+      if (listingIds.length > 0) {
+        const { data: pineconeListings } = await supabase
+          .from("listings")
+          .select()
+          .in("id", listingIds);
+
+        listings_pinecone = pineconeListings;
+      }
     }
 
-    return listings || [];
+    if (error) {
+      console.error("Database query error:", error);
+      return { regular: [], from_pinecone: null } as GetListingsResult;
+    }
+
+    return {
+      regular: listings || [],
+      from_pinecone: listings_pinecone,
+    } as GetListingsResult;
   } catch (dbError) {
     console.error("Database operation failed:", dbError);
-    return [];
+    return { regular: [], from_pinecone: null } as GetListingsResult;
   }
 });
