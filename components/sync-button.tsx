@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { syncToPinecone } from "@/app/actions/sync-to-pinecone";
+import { syncToPinecone } from "@/lib/sync-to-pinecone";
 
 export default function SyncButton() {
   const [isSyncing, setIsSyncing] = useState(false);
