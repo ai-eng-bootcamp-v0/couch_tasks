@@ -17,10 +17,10 @@ export async function login(formData: FormData) {
 
   const { error, data: user } = await supabase.auth.signInWithPassword(data);
 
-  console.log(user);
+  console.log(error);
 
   if (error) {
-    return { error: true };
+    redirect("/error");
   }
 
   revalidatePath("/", "layout");
