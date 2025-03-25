@@ -30,9 +30,6 @@ export default function LoginForm() {
 
       if (isLogin) {
         const result = await login(formData);
-        if (result?.error) {
-          console.error("Login failed");
-        }
       } else {
         await signup(formData);
       }
