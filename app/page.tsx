@@ -1,9 +1,14 @@
 import ListingsGrid from "@/components/listings-grid";
 import SearchBar from "@/components/search-bar";
 import SyncButton from "@/components/sync-button";
-import { getListings, Listing as ApiListing } from "@/lib/get-listings";
+import {
+  getListings,
+  Listing as ApiListing,
+  GetListingsResult,
+} from "@/lib/get-listings";
 import { Listing as ModelListing } from "@/models/listing";
 import { EffortLevel } from "@/models/listing";
+import { getAIRouterDecision } from "@/lib/ai-router";
 
 interface HomeProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -24,7 +29,7 @@ export default async function Home({ searchParams }: HomeProps) {
   const params = await searchParams;
   const searchQuery = params.q as string | undefined;
 
-  const { regular, from_pinecone } = await getListings(searchQuery);
+  const { regular, from_pinecone } = await getAIRouterDecision(searchQuery);
 
   const convertedRegular = regular.map(convertToModelListing);
   const convertedPinecone = from_pinecone
