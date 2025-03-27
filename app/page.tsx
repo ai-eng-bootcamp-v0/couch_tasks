@@ -29,7 +29,15 @@ export default async function Home({ searchParams }: HomeProps) {
   const params = await searchParams;
   const searchQuery = params.q as string | undefined;
 
-  const { regular, from_pinecone } = await getAIRouterDecision(searchQuery);
+  let listings: GetListingsResult;
+
+  if (!searchQuery) {
+    listings = { regular: [], from_pinecone: null };
+  } else {
+    listings = await getAIRouterDecision(searchQuery);
+  }
+
+  const { regular, from_pinecone } = listings;
 
   const convertedRegular = regular.map(convertToModelListing);
   const convertedPinecone = from_pinecone
