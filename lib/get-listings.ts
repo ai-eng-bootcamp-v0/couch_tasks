@@ -1,16 +1,13 @@
 import { cache } from "react";
 import { createClient } from "@/utils/supabase/server";
-import { aiSearch } from "./ai-search";
 import { getPineconeListings } from "./pinecone-queries";
 import { SearchResponse } from "@/models/ai-schemas";
 
-export interface Listing {
+export type Listing = SearchResponse & {
   id: string;
-  city?: string;
-  country?: string;
-  effort_level?: number;
-  [key: string]: any;
-}
+  image_url?: string;
+  description?: string;
+};
 
 export type GetListingsResult = {
   regular: Listing[];
@@ -22,8 +19,6 @@ export const getListings = cache(
     const supabase = await createClient();
     let query = supabase.from("listings").select();
 
-    console.log("SEARCH PARAMS", searchParams);
-
     if (searchParams) {
       try {
         if (searchParams.city) {
@@ -33,7 +28,11 @@ export const getListings = cache(
           query = query.ilike("country", `%${searchParams.country}%`);
         }
         if (searchParams.effort_level) {
-          query = query.eq("effort_level", parseInt(searchParams.effort_level));
+          const effortLevel =
+            typeof searchParams.effort_level === "string"
+              ? parseInt(searchParams.effort_level)
+              : searchParams.effort_level;
+          query = query.eq("effort_level", effortLevel);
         }
       } catch (error) {
         console.error("Error in search:", error);

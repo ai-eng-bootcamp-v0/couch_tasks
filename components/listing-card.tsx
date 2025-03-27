@@ -77,6 +77,12 @@ export default function ListingCard({
           </h3>
         </div>
 
+        {listing.street_address && (
+          <div className="mt-1 text-sm text-gray-700">
+            {listing.street_address}
+          </div>
+        )}
+
         <div className="mt-1 text-xs text-gray-500">
           Effort level: {renderEffortLevel(listing.effort_level)}
         </div>

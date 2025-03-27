@@ -22,6 +22,7 @@ const convertToModelListing = (listing: ApiListing): ModelListing => {
     effort_level: (listing.effort_level || 1) as EffortLevel,
     image_url: listing.image_url,
     description: listing.description,
+    street_address: listing.street_address,
   };
 };
 

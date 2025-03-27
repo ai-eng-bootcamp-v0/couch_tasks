@@ -1,6 +1,10 @@
 import { getListings, GetListingsResult } from "@/lib/get-listings";
-import { searchResponseSchema } from "@/models/ai-schemas";
-import { tool } from "ai";
+import {
+  searchResponseSchema,
+  webSearchResponseSchema,
+} from "@/models/ai-schemas";
+import { openai } from "@ai-sdk/openai";
+import { generateObject, generateText, tool } from "ai";
 import { z } from "zod";
 
 export function createGetListingsFromDBTool(searchQuery?: string) {
@@ -25,11 +29,37 @@ export function createWebSearchTool(searchQuery?: string) {
         .describe("The search query to look for international listings"),
     }),
     execute: async (params) => {
-      console.log("SEARCHED THE WEB", params.query);
-      return {
-        regular: [],
+      const searchResult = await generateText({
+        toolChoice: "required",
+        model: openai.responses("gpt-4o-mini"),
+        prompt: searchQuery,
+        tools: {
+          web_search_preview: openai.tools.webSearchPreview({
+            searchContextSize: "high",
+            userLocation: {
+              type: "approximate",
+            },
+          }),
+        },
+      });
+
+      const finalResult = await generateObject({
+        model: openai.responses("gpt-4o-mini"),
+        prompt: `Convert the following ${searchResult.text}`,
+        schema: z.object({
+          listings: z.array(webSearchResponseSchema.omit({ id: true })),
+        }),
+      });
+
+      const finalListings = {
+        regular: finalResult.object.listings.map((listing, index) => ({
+          ...listing,
+          id: `web-listing-${index}-${Date.now()}`,
+        })),
         from_pinecone: [],
-      } as GetListingsResult;
+      };
+
+      return finalListings;
     },
   });
 }

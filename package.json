@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ai-sdk/google": "^1.2.3",
     "@ai-sdk/openai": "^1.2.6",
     "@ai-sdk/react": "^1.1.24",
     "@pinecone-database/pinecone": "^5.1.1",

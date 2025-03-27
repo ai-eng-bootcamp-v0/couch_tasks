@@ -7,4 +7,5 @@ export interface Listing {
   effort_level: EffortLevel;
   image_url?: string;
   description?: string;
+  street_address?: string;
 }
