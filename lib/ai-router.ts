@@ -52,16 +52,16 @@ export async function getDeepResearchRouterDecision(
     toolChoice: "required",
   });
 
-  for (const toolResult of toolCallResult.toolResults) {
-    switch (toolResult.toolName) {
-      case "getListingsFromDB":
-        return toolResult.result as GetListingsResult;
-      case "getListingsFromWeb":
-        return toolResult.result as GetListingsResult;
-      default:
-        return getListings();
-    }
-  }
+  // for (const toolResult of toolCallResult.toolResults) {
+  //   switch (toolResult.toolName) {
+  //     case "getListingsFromDB":
+  //       return toolResult.result as GetListingsResult;
+  //     case "getListingsFromWeb":
+  //       return toolResult.result as GetListingsResult;
+  //     default:
+  //       return getListings();
+  //   }
+  // }
 
   return getListings();
 }
