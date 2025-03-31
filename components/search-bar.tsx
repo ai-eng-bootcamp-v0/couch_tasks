@@ -27,7 +27,7 @@ export default function SearchBar({
 
   useEffect(() => {
     const currentQuery = searchParams.get("q") || "";
-    const isDeepEnabled = searchParams.has("deep");
+    const isDeepEnabled = searchParams.get("deep") === "true";
     setQuery(currentQuery);
     setDeepResearch(isDeepEnabled);
     setIsSearching(false);
@@ -91,7 +91,7 @@ export default function SearchBar({
   return (
     <div className="w-full max-w-3xl mx-auto">
       <h1 className="text-3xl font-semibold text-center mb-8">
-        What do you want to know?
+        Where do you want to go?
       </h1>
       <div className="relative">
         <div className="absolute left-5 top-1/2 -translate-y-1/2 z-10">
@@ -114,6 +114,7 @@ export default function SearchBar({
                 variant={deepResearch ? "default" : "outline"}
                 size="sm"
                 onClick={toggleDeepResearch}
+                type="button"
                 className={`rounded-full text-xs px-3 py-1 h-8 flex items-center gap-1 
                 }`}
               >
