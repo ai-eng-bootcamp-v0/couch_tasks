@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { syncToPinecone } from "@/lib/sync-to-pinecone";
+import { Database } from "lucide-react";
 
 export default function SyncButton() {
   const [isSyncing, setIsSyncing] = useState(false);
@@ -25,8 +26,11 @@ export default function SyncButton() {
     <Button
       onClick={handleSync}
       disabled={isSyncing}
-      className="bg-blue-600 hover:bg-blue-700 text-white"
+      variant="outline"
+      size="sm"
+      className="rounded-full text-xs h-8 flex items-center gap-1 bg-transparent border-gray-200 text-gray-600 hover:bg-gray-50"
     >
+      <Database className="h-3 w-3 mr-1" />
       {isSyncing ? "Syncing..." : "Sync to Pinecone"}
     </Button>
   );

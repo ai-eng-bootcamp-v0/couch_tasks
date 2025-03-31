@@ -22,7 +22,7 @@ export function createGetListingsFromDBTool(searchQuery?: string) {
 export function createWebSearchTool(searchQuery?: string) {
   return tool({
     description:
-      "Search the web for information about listings outside of North America. Use this tool when the user is asking about international listings.",
+      "Search the web for information about listings outside of Canada. Use this tool when the user is asking about international listings.",
     parameters: z.object({
       query: z
         .string()
