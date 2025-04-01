@@ -8,7 +8,10 @@ import {
 } from "@/lib/get-listings";
 import { Listing as ModelListing } from "@/models/listing";
 import { EffortLevel } from "@/models/listing";
-import { getNormalSearchRouterDecision } from "@/lib/ai-router";
+import {
+  getDeepResearchRouterDecision,
+  getNormalSearchRouterDecision,
+} from "@/lib/ai-router";
 
 interface HomeProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -38,7 +41,9 @@ export default async function Home({ searchParams }: HomeProps) {
   } else {
     if (isDeepResearch) {
       console.log("Server-side Deep Research mode");
-      // In a real implementation, you would use a different search strategy here
+      const deepResearchResult = await getDeepResearchRouterDecision(
+        searchQuery
+      );
       listings = { regular: [], from_pinecone: null };
     } else {
       listings = await getNormalSearchRouterDecision(searchQuery);

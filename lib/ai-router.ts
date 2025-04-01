@@ -9,7 +9,7 @@ import {
   createGetListingsFromDBTool,
   createWebSearchTool,
 } from "@/agent-tools/router";
-
+import { getSourcesOnlineToUnderstandQuestion } from "@/agent-tools/deep-research";
 export async function getNormalSearchRouterDecision(
   searchQuery?: string
 ): Promise<GetListingsResult> {
@@ -39,12 +39,14 @@ export async function getNormalSearchRouterDecision(
 }
 
 export async function getDeepResearchRouterDecision(
-  searchQuery?: string
+  searchQuery: string
 ): Promise<GetListingsResult> {
-  const toolCallResult = await generateText({
+  const userQueryUnderstandingRouter = await generateText({
     model: openai("gpt-4o"),
     tools: {
-      // TOOL: generateUnderstanding
+      getSourcesOnlineToUnderstandQuestion:
+        getSourcesOnlineToUnderstandQuestion(searchQuery),
+      // TOOL: askUserToClarify
       // TOOL: handOffToReportAgent
     },
     system: DEEP_RESEARCH_ROUTER_PROMPT,
