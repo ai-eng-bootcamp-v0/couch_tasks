@@ -1,15 +1,13 @@
 import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { getListings, GetListingsResult } from "@/lib/get-listings";
-import {
-  DEEP_RESEARCH_ROUTER_PROMPT,
-  NORMAL_SEARCH_ROUTER_PROMPT,
-} from "@/prompts/router";
+import { DEEP_RESEARCH_ROUTER_PROMPT } from "@/prompts/deep-research";
 import {
   createGetListingsFromDBTool,
   createWebSearchTool,
 } from "@/agent-tools/router";
 import { getSourcesOnlineToUnderstandQuestion } from "@/agent-tools/deep-research";
+import { NORMAL_SEARCH_ROUTER_PROMPT } from "@/prompts/normal-search";
 export async function getNormalSearchRouterDecision(
   searchQuery?: string
 ): Promise<GetListingsResult> {
@@ -46,8 +44,8 @@ export async function getDeepResearchRouterDecision(
     tools: {
       getSourcesOnlineToUnderstandQuestion:
         getSourcesOnlineToUnderstandQuestion(searchQuery),
-      // TOOL: askUserToClarify
       // TOOL: handOffToReportAgent
+      // TOOL: askUserToClarify
     },
     system: DEEP_RESEARCH_ROUTER_PROMPT,
     prompt: searchQuery,

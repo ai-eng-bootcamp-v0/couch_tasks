@@ -38,3 +38,14 @@ export function getSourcesOnlineToUnderstandQuestion(searchQuery: string) {
     },
   });
 }
+
+export function handOffToReportAgent(inputSearchKnowledge: string) {
+  return tool({
+    description:
+      "Pass responsibility over to the search report agent to conduct further research once the user's query is clear.",
+    parameters: z.null(),
+    execute: async () => {
+      // Start the next agent runtime (generateText), pass inputSearchKnowledge into the prompt
+    },
+  });
+}
