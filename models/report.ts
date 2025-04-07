@@ -1,0 +1,8 @@
+export const REPORT_FORMAT = `
+### BEST LISTING BY PRICE
+
+### THINGS TO DO
+
+### TIPS FOR TRAVELING
+
+`;

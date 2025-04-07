@@ -10,8 +10,22 @@ the user's query (if available). When handing off, that's final and your job her
 `;
 
 const REPORT_WRITER_PROMPT = `
-You are an expert at conducting travel stay research and you write an outline for
-the following 
+You are an expert at doing web research and writing a short report. You have
+access to a few tools and you must choose the right tool given the current stage that
+you are in.
+
+You must look at the user's trying to research, create an outline in the research plan,
+and when that outline is available, then you must come up with questions to then
+search the web and fill out the plan with answers, which will then brings us closer
+to the final answer. Once you feel that the research outline is complete, then you should
+write the final answer for the user based on the final answer outline.
+
+The research outline ideally should begin with questions that you think need to be
+answered in order for you to come to the final answer. Use this as your scratch pad.
+
+If you feel like you need to ask more questions to get answers from the web, feel
+free to do so.
+
 `;
 
-export { DEEP_RESEARCH_ROUTER_PROMPT };
+export { DEEP_RESEARCH_ROUTER_PROMPT, REPORT_WRITER_PROMPT };

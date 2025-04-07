@@ -1,13 +1,19 @@
-import { generateText } from "ai";
+import { generateText, tool } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { getListings, GetListingsResult } from "@/lib/get-listings";
-import { DEEP_RESEARCH_ROUTER_PROMPT } from "@/prompts/deep-research";
+import {
+  DEEP_RESEARCH_ROUTER_PROMPT,
+  REPORT_WRITER_PROMPT,
+} from "@/prompts/deep-research";
 import {
   createGetListingsFromDBTool,
   createWebSearchTool,
 } from "@/agent-tools/router";
 import { getSourcesOnlineToUnderstandQuestion } from "@/agent-tools/deep-research";
 import { NORMAL_SEARCH_ROUTER_PROMPT } from "@/prompts/normal-search";
+import { REPORT_FORMAT } from "@/models/report";
+import { z } from "zod";
+import { executeWebSearch } from "./web-search";
 export async function getNormalSearchRouterDecision(
   searchQuery?: string
 ): Promise<GetListingsResult> {
@@ -72,13 +78,28 @@ export async function runResearchAgent(inputKnowledge: string) {
   console.log("RESEARCH AGENT HAD STARTED!");
   console.log(inputKnowledge);
 
-  return;
+  let researchOutline;
+
+  let prompt = `
+  This is what the user requires you to research: ${inputKnowledge}
+  This is what the format of the final answer would look like: ${REPORT_FORMAT}
+  ${researchOutline && `The research outline is ${researchOutline}`}
+  `;
 
   const researchAgent = await generateText({
     model: openai("gpt-4o"),
-    system: DEEP_RESEARCH_ROUTER_PROMPT,
-    prompt: "ADD THE RESEARCH AGENT PROMPT HERE",
+    system: REPORT_WRITER_PROMPT,
+    prompt: prompt,
+    tools: {
+      webSearch: tool({
+        description: "Use this tool to search online for answer",
+        parameters: z.string().describe("Search query"),
+        execute: async (searchQuery) => {
+          return await executeWebSearch(searchQuery);
+        },
+      }),
+    },
     toolChoice: "required",
-    maxSteps: 2,
+    maxSteps: 10,
   });
 }
