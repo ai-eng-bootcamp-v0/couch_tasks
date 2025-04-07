@@ -75,10 +75,9 @@ export async function getDeepResearchRouterDecision(
 }
 
 export async function runResearchAgent(inputKnowledge: string) {
-  console.log("RESEARCH AGENT HAD STARTED!");
-  console.log(inputKnowledge);
+  console.log("Running research agent");
 
-  let researchOutline;
+  let researchOutline: string | undefined;
 
   let prompt = `
   This is what the user requires you to research: ${inputKnowledge}
@@ -93,13 +92,33 @@ export async function runResearchAgent(inputKnowledge: string) {
     tools: {
       webSearch: tool({
         description: "Use this tool to search online for answer",
-        parameters: z.string().describe("Search query"),
-        execute: async (searchQuery) => {
+        parameters: z.object({
+          searchQuery: z.string().describe("Search query"),
+        }),
+        execute: async ({ searchQuery }) => {
+          console.log(`The search query: ${searchQuery}`);
           return await executeWebSearch(searchQuery);
         },
       }),
+      writeToResearchPlan: tool({
+        description: "Use this tool to write or update the research plan",
+        parameters: z.object({
+          newVersion: z
+            .string()
+            .describe("The new version of the research plan"),
+        }),
+        execute: async ({ newVersion }) => {
+          console.log(`
+            ### Old version:
+            ${researchOutline}
+            `);
+          researchOutline = newVersion;
+          return newVersion;
+        },
+      }),
     },
-    toolChoice: "required",
-    maxSteps: 10,
+    maxSteps: 5,
   });
+  console.log(researchOutline);
+  console.log(researchAgent.text);
 }

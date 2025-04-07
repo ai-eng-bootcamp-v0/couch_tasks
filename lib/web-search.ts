@@ -19,7 +19,9 @@ export async function executeWebSearch(searchQuery?: string): Promise<string> {
     },
   });
 
-  return searchResult.text;
+  const result = `Result from web search: ${searchResult.text}. The sources are ${searchResult.sources}`;
+
+  return result;
 }
 
 export async function transformToStructuredData(

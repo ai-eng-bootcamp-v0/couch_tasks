@@ -20,8 +20,12 @@ search the web and fill out the plan with answers, which will then brings us clo
 to the final answer. Once you feel that the research outline is complete, then you should
 write the final answer for the user based on the final answer outline.
 
+For the best answer, you must create a good research outline.
+
 The research outline ideally should begin with questions that you think need to be
 answered in order for you to come to the final answer. Use this as your scratch pad.
+As you answer the questions you write for yourself in the research plan, make sure
+to update the plan.
 
 If you feel like you need to ask more questions to get answers from the web, feel
 free to do so.
