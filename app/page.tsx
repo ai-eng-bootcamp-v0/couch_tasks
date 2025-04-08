@@ -9,9 +9,10 @@ import {
 import { Listing as ModelListing } from "@/models/listing";
 import { EffortLevel } from "@/models/listing";
 import {
-  getDeepResearchRouterDecision,
+  getDeepResearch,
   getNormalSearchRouterDecision,
 } from "@/lib/ai-router";
+import DeepResearchUI from "@/components/deep-research-ui";
 
 interface HomeProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -32,22 +33,14 @@ const convertToModelListing = (listing: ApiListing): ModelListing => {
 export default async function Home({ searchParams }: HomeProps) {
   const params = await searchParams;
   const searchQuery = params.q as string | undefined;
-  const isDeepResearch = params.deep !== undefined;
+  const isDeepResearch = params.deep === "true";
 
-  let listings: GetListingsResult;
+  let listings: GetListingsResult = { regular: [], from_pinecone: null };
 
   if (!searchQuery) {
     listings = { regular: [], from_pinecone: null };
-  } else {
-    if (isDeepResearch) {
-      console.log("Server-side Deep Research mode");
-      const deepResearchResult = await getDeepResearchRouterDecision(
-        searchQuery
-      );
-      listings = { regular: [], from_pinecone: null };
-    } else {
-      listings = await getNormalSearchRouterDecision(searchQuery);
-    }
+  } else if (!isDeepResearch) {
+    listings = await getNormalSearchRouterDecision(searchQuery);
   }
 
   const { regular, from_pinecone } = listings;
@@ -59,6 +52,23 @@ export default async function Home({ searchParams }: HomeProps) {
 
   const hasNoListings =
     convertedRegular.length === 0 && convertedPinecone.length === 0;
+
+  if (isDeepResearch && searchQuery) {
+    return (
+      <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+        <main className="flex flex-col gap-[32px] row-start-2 items-center w-full">
+          <div className="w-full max-w-3xl flex flex-col items-center">
+            <SearchBar initialQuery={searchQuery} />
+            <div className="mt-4">
+              <SyncButton />
+            </div>
+          </div>
+
+          <DeepResearchUI searchQuery={searchQuery} />
+        </main>
+      </div>
+    );
+  }
 
   if (hasNoListings) {
     return (

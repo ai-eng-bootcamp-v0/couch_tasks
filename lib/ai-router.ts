@@ -2,8 +2,8 @@ import { generateText, tool } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { getListings, GetListingsResult } from "@/lib/get-listings";
 import {
-  DEEP_RESEARCH_ROUTER_PROMPT,
-  REPORT_WRITER_PROMPT,
+  INITIAL_DEEP_RESEARCH_ROUTER,
+  DEEP_RESEARCH_AGENT,
 } from "@/prompts/deep-research";
 import {
   createGetListingsFromDBTool,
@@ -42,16 +42,17 @@ export async function getNormalSearchRouterDecision(
   return getListings();
 }
 
-export async function getDeepResearchRouterDecision(
-  searchQuery: string
-): Promise<GetListingsResult> {
-  const userQueryUnderstandingRouter = await generateText({
+export async function getUserQueryUnderstanding(
+  searchQuery: string,
+  onUnderstandingComplete: (expandedUnderstanding: string | undefined) => void
+): Promise<void> {
+  await generateText({
     model: openai("gpt-4o"),
     tools: {
       getSourcesOnlineToUnderstandQuestion:
         getSourcesOnlineToUnderstandQuestion(searchQuery),
     },
-    onStepFinish({ text, toolCalls, toolResults, finishReason, usage }) {
+    onStepFinish({ toolResults }) {
       let expandedUnderstanding;
       for (const toolResult of toolResults) {
         if (toolResult.toolName === "getSourcesOnlineToUnderstandQuestion") {
@@ -59,22 +60,26 @@ export async function getDeepResearchRouterDecision(
         }
       }
 
-      runResearchAgent(
-        expandedUnderstanding
-          ? `${expandedUnderstanding}\n\nUser Query: ${searchQuery}`
-          : `User Query: ${searchQuery}`
-      );
+      onUnderstandingComplete(expandedUnderstanding);
     },
-    system: DEEP_RESEARCH_ROUTER_PROMPT,
+    system: INITIAL_DEEP_RESEARCH_ROUTER,
     prompt: searchQuery,
     toolChoice: "required",
     maxSteps: 2,
   });
-
-  return getListings();
 }
 
-export async function runResearchAgent(inputKnowledge: string) {
+export async function getDeepResearch(searchQuery: string) {
+  await getUserQueryUnderstanding(searchQuery, (expandedUnderstanding) => {
+    getDeepResearchAgentResponse(
+      expandedUnderstanding
+        ? `${expandedUnderstanding}\n\nUser Query: ${searchQuery}`
+        : `User Query: ${searchQuery}`
+    );
+  });
+}
+
+export async function getDeepResearchAgentResponse(inputKnowledge: string) {
   console.log("Running research agent");
 
   let researchOutline: string | undefined;
@@ -85,9 +90,9 @@ export async function runResearchAgent(inputKnowledge: string) {
   ${researchOutline && `The research outline is ${researchOutline}`}
   `;
 
-  const researchAgent = await generateText({
+  const response = await generateText({
     model: openai("gpt-4o"),
-    system: REPORT_WRITER_PROMPT,
+    system: DEEP_RESEARCH_AGENT,
     prompt: prompt,
     tools: {
       webSearch: tool({
@@ -119,6 +124,6 @@ export async function runResearchAgent(inputKnowledge: string) {
     },
     maxSteps: 5,
   });
-  console.log(researchOutline);
-  console.log(researchAgent.text);
+
+  return response.text;
 }

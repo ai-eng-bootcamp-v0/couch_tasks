@@ -1,4 +1,4 @@
-const DEEP_RESEARCH_ROUTER_PROMPT = `
+const INITIAL_DEEP_RESEARCH_ROUTER = `
 You are an expert at leveraging many different tools to help a user
 find the best place to stay.
 If the user's question is clear then use the right tool to handoff to
@@ -9,7 +9,7 @@ To handoff to the report agent, it needs to know the expanded knowledge around
 the user's query (if available). When handing off, that's final and your job here is done.
 `;
 
-const REPORT_WRITER_PROMPT = `
+const DEEP_RESEARCH_AGENT = `
 You are an expert at doing web research and writing a short report. You have
 access to a few tools and you must choose the right tool given the current stage that
 you are in.
@@ -32,4 +32,4 @@ free to do so.
 
 `;
 
-export { DEEP_RESEARCH_ROUTER_PROMPT, REPORT_WRITER_PROMPT };
+export { INITIAL_DEEP_RESEARCH_ROUTER, DEEP_RESEARCH_AGENT };
