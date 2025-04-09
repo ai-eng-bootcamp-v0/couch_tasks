@@ -1,6 +1,7 @@
 import { generateText, tool } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { getListings, GetListingsResult } from "@/lib/get-listings";
+import { AISDKExporter } from "langsmith/vercel";
 import {
   INITIAL_DEEP_RESEARCH_ROUTER,
   DEEP_RESEARCH_AGENT,
@@ -91,6 +92,7 @@ export async function getDeepResearchAgentResponse(inputKnowledge: string) {
   const response = await generateText({
     model: openai("gpt-4o"),
     system: DEEP_RESEARCH_AGENT,
+    experimental_telemetry: AISDKExporter.getSettings(),
     prompt: prompt,
     tools: {
       webSearch: tool({

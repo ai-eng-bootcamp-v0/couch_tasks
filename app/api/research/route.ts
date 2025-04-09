@@ -4,6 +4,7 @@ import { executeWebSearch } from "@/lib/web-search";
 import { DEEP_RESEARCH_AGENT } from "@/prompts/deep-research";
 import { REPORT_FORMAT } from "@/models/report";
 import { z } from "zod";
+import { AISDKExporter } from "langsmith/vercel";
 
 export const maxDuration = 120;
 
@@ -34,6 +35,7 @@ export async function POST(request: Request) {
   const result = streamText({
     model: openai("gpt-4o"),
     system: DEEP_RESEARCH_AGENT,
+    experimental_telemetry: AISDKExporter.getSettings(),
     prompt,
     tools: {
       webSearch: tool({
@@ -63,7 +65,7 @@ export async function POST(request: Request) {
         },
       }),
     },
-    maxSteps: 5,
+    maxSteps: 7,
   });
 
   return result.toDataStreamResponse();

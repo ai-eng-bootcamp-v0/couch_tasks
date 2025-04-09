@@ -20,13 +20,7 @@ export default function DeepResearchUI({ searchQuery }: DeepResearchUIProps) {
   const [isInitialized, setIsInitialized] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const {
-    messages,
-    append,
-    isLoading: _isLoading,
-    input,
-    setInput,
-  } = useChat({
+  const { messages, append } = useChat({
     api: "/api/research",
     initialMessages: [],
     body: {
