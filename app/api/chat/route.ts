@@ -6,8 +6,6 @@ import { NextResponse } from "next/server";
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  console.log("Chat API route called");
-
   try {
     const body = await req.json();
     const { query } = body;

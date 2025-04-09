@@ -80,8 +80,6 @@ export async function getDeepResearch(searchQuery: string) {
 }
 
 export async function getDeepResearchAgentResponse(inputKnowledge: string) {
-  console.log("Running research agent");
-
   let researchOutline: string | undefined;
 
   let prompt = `

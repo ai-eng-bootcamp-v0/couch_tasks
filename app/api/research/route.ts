@@ -5,7 +5,7 @@ import { DEEP_RESEARCH_AGENT } from "@/prompts/deep-research";
 import { REPORT_FORMAT } from "@/models/report";
 import { z } from "zod";
 
-export const maxDuration = 120; // Setting max duration to 2 minutes
+export const maxDuration = 120;
 
 export async function POST(request: Request) {
   const { searchQuery, messages } = await request.json();
